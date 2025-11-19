@@ -8,7 +8,7 @@ This repository contains the complete implementation of foundation models (Times
 
 ### Software Availability
 
-- **Repository**: https://github.com/[your-username]/foundation-models-hydro-climate
+- **Repository**: https://github.com/zechariahyue/hydro-foundation-model
 - **License**: MIT License
 - **Programming Language**: Python 3.9+
 - **Dependencies**: See requirements.txt
