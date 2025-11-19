@@ -1,0 +1,260 @@
+# Data Configuration for Hydro-Climate Foundation Models
+# Based on the comprehensive data integration strategy
+
+# Dataset Paths
+data_paths:
+  # Primary hydrological datasets
+  camels_us: "data/raw/camels_us/"
+  lamah_ce: "data/raw/lamah_ce/"
+  
+  # Climate forcing data
+  era5_land: "data/raw/era5_land/"
+  chirps: "data/raw/chirps/"
+  
+  # Static basin attributes
+  hydroatlas: "data/raw/hydroatlas/"
+  grand: "data/raw/grand/"
+  
+  # Processed data
+  processed: "data/processed/"
+  zarr_store: "data/processed/hydro_climate.zarr"
+
+# Data Sources Configuration
+data_sources:
+  
+  # CAMELS-US Dataset
+  camels_us:
+    description: "671 US catchments with daily discharge"
+    variables:
+      - "streamflow"
+    static_attributes: 60
+    temporal_coverage: "1980-2014"
+    spatial_coverage: "CONUS"
+    license: "CC BY 4.0"
+    
+  # LamaH-CE Dataset  
+  lamah_ce:
+    description: "859 Central European basins"
+    variables:
+      - "streamflow"
+    temporal_coverage: "1981-2019"
+    spatial_coverage: "Central Europe"
+    license: "CC BY 4.0"
+  
+  # ERA5-Land Reanalysis
+  era5_land:
+    description: "Hourly reanalysis fields"
+    resolution: "0.1° × 0.1°"
+    temporal_coverage: "1950-present"
+    variables:
+      - "2m_temperature"
+      - "total_precipitation"
+      - "soil_moisture_layer_1"
+      - "soil_moisture_layer_2"
+      - "soil_moisture_layer_3"
+      - "surface_pressure"
+      - "10m_u_component_of_wind"
+      - "10m_v_component_of_wind"
+      - "convective_available_potential_energy"
+      - "total_column_water_vapour"
+    license: "CC BY 4.0"
+    
+  # CHIRPS Precipitation
+  chirps:
+    description: "Bias-corrected satellite precipitation"
+    version: "v3.0"
+    resolution: "0.05° × 0.05°"
+    temporal_coverage: "1981-present"
+    variables:
+      - "precipitation"
+    license: "CC BY 4.0"
+    
+  # HydroATLAS
+  hydroatlas:
+    description: "Global hydro-environmental attributes"
+    resolution: "15 arc-second"
+    variables: 56
+    categories:
+      - "topography"
+      - "climate"
+      - "land_cover"
+      - "soil"
+      - "geology"
+      - "hydrology"
+    license: "CC BY 4.0"
+    
+  # GRanD Database
+  grand:
+    description: "Global reservoir and dam database"
+    version: "v1.3"
+    records: 6862
+    attributes:
+      - "storage_capacity"
+      - "dam_height"
+      - "purpose"
+      - "commissioning_year"
+    license: "Open Access"
+
+# Data Processing Configuration
+preprocessing:
+  
+  # Quality Control
+  quality_control:
+    # Temporal integrity
+    gap_filling:
+      max_gap_days: 3
+      method: "linear_interpolation"
+      seasonal_decomposition: true
+    
+    # Spatial coherence
+    outlier_detection:
+      method: "z_score"
+      threshold: 3.0
+      neighborhood_size: 8
+      replacement_method: "bilateral_weighted_median"
+    
+    # Basin aggregation
+    aggregation:
+      temporal_resolution: "daily"
+      spatial_method: "area_weighted_average"
+      
+  # Normalization and Scaling
+  normalization:
+    method: "standard_scaler"  # or "min_max", "robust"
+    per_basin: false
+    per_variable: true
+    
+  # Sequence Generation
+  sequences:
+    input_length: 100  # days
+    output_length: 1   # days
+    stride: 1
+    padding: "zero"
+    
+  # Train/Validation/Test Split
+  data_split:
+    method: "temporal"
+    train_ratio: 0.7
+    val_ratio: 0.15
+    test_ratio: 0.15
+    
+    # Regional split for zero-shot evaluation
+    regional_split:
+      source_regions: ["North America", "Europe"]
+      target_regions: ["Asia", "South America", "Africa", "Australia"]
+
+# Basin Selection Criteria
+basin_selection:
+  
+  # Minimum data requirements
+  min_data_years: 10
+  max_missing_ratio: 0.1
+  min_drainage_area: 10  # km²
+  max_drainage_area: 50000  # km²
+  
+  # Climate diversity
+  koppen_classes:
+    - "Af"  # Tropical rainforest
+    - "Am"  # Tropical monsoon
+    - "Aw"  # Tropical savanna
+    - "BWh" # Hot desert
+    - "BWk" # Cold desert
+    - "BSh" # Hot semi-arid
+    - "BSk" # Cold semi-arid
+    - "Cfa" # Humid subtropical
+    - "Cfb" # Oceanic
+    - "Cfc" # Subpolar oceanic
+    - "Csa" # Hot-summer Mediterranean
+    - "Csb" # Warm-summer Mediterranean
+    - "Cwa" # Monsoon-influenced humid subtropical
+    - "Cwb" # Subtropical highland
+    - "Dfa" # Hot-summer humid continental
+    - "Dfb" # Warm-summer humid continental
+    - "Dfc" # Subarctic
+    - "Dfd" # Extremely cold subarctic
+    - "Dsa" # Hot-summer Mediterranean continental
+    - "Dsb" # Warm-summer Mediterranean continental
+    - "Dsc" # Cold-summer Mediterranean continental
+    - "Dwa" # Monsoon-influenced hot-summer humid continental
+    - "Dwb" # Monsoon-influenced warm-summer humid continental
+    - "Dwc" # Monsoon-influenced subarctic
+    - "ET"  # Tundra
+    - "EF"  # Ice cap
+
+# Data Loading Configuration
+data_loading:
+  
+  # Batch processing
+  batch_size: 32
+  num_workers: 4
+  pin_memory: true
+  drop_last: false
+  
+  # Caching
+  cache_data: true
+  cache_dir: "data/cache/"
+  
+  # Memory management
+  lazy_loading: true
+  chunk_size: 1000
+  
+  # Data augmentation (for training)
+  augmentation:
+    enabled: false
+    methods:
+      - "gaussian_noise"
+      - "temporal_jittering"
+    noise_std: 0.01
+    jitter_std: 0.1
+
+# Validation Configuration
+validation:
+  
+  # Cross-validation strategy
+  cv_strategy: "basin_grouped"
+  n_folds: 5
+  
+  # Metrics computation
+  metrics:
+    - "nash_sutcliffe_efficiency"
+    - "root_mean_squared_error" 
+    - "mean_absolute_error"
+    - "pearson_correlation"
+    - "kling_gupta_efficiency"
+    - "percent_bias"
+    - "volumetric_efficiency"
+  
+  # Statistical significance
+  significance_tests:
+    - "wilcoxon_signed_rank"
+    - "paired_t_test"
+    - "mann_whitney_u"
+  
+  confidence_level: 0.95
+  bootstrap_samples: 10000
+
+# Export Configuration
+export:
+  
+  # Output formats
+  formats:
+    - "zarr"
+    - "netcdf"
+    - "parquet"
+    - "csv"
+  
+  # Compression
+  compression:
+    zarr: "blosc"
+    netcdf: "zlib"
+    parquet: "snappy"
+  
+  # Metadata
+  include_metadata: true
+  metadata_format: "yaml"
+  
+  # Data documentation
+  documentation:
+    include_provenance: true
+    include_processing_log: true
+    include_quality_flags: true
