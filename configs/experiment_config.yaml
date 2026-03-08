@@ -1,0 +1,129 @@
+# ============================================================
+# Experiment Configuration
+# Foundation Models for Global Streamflow Forecasting
+# ============================================================
+
+paths:
+  # Override these with env vars: CAMELS_RAW_DIR, CAMELS_DATA_DIR, RESULTS_DIR, FIGURES_DIR, CKPT_DIR
+  # Or edit directly for your local setup.
+  raw_data: "data/raw"
+  processed_data: "data/processed"
+  results: "results"
+  figures: "figures"
+  models: "checkpoints"
+
+datasets:
+  # Source regions (used for pretraining/training)
+  source:
+    - name: "CAMELS-US"
+      path: "CAMELS"
+      n_basins: 671
+      forcing: "daymet"  # daymet, maurer, or nldas
+
+  # Target regions (zero-shot / few-shot evaluation)
+  target:
+    - name: "CAMELS-BR"
+      path: "CAMELS-BR"
+    - name: "CAMELS-CL"
+      path: "CAMELS-CL"
+    - name: "CAMELS-AUS"
+      path: "CAMELS-AUS"
+    - name: "LamaH-CE"
+      path: "LamaH-CE"
+
+temporal:
+  train_start: "1980-01-01"
+  train_end: "2009-12-31"
+  val_start: "2010-01-01"
+  val_end: "2014-12-31"
+  test_start: "2015-01-01"
+  test_end: "2019-12-31"
+  seq_length: 365        # input sequence length (days)
+  forecast_horizon: 1    # 1-day ahead forecast (also test 7, 14, 30)
+
+features:
+  # Dynamic forcing variables (daily)
+  forcing_vars:
+    - "prcp"          # precipitation (mm/day)
+    - "srad"          # shortwave radiation (W/m2)
+    - "tmax"          # max temperature (C)
+    - "tmin"          # min temperature (C)
+    - "vp"            # vapor pressure (Pa)
+
+  # Static basin attributes
+  static_vars:
+    - "p_mean"        # mean precipitation
+    - "pet_mean"      # mean PET
+    - "aridity"       # aridity index
+    - "frac_snow"     # fraction of snow
+    - "elev_mean"     # mean elevation
+    - "slope_mean"    # mean slope
+    - "area_gages2"   # basin area
+    - "soil_depth_pelletier"
+    - "sand_frac"
+    - "clay_frac"
+    - "carbonate_rocks_frac"
+    - "forest_frac"
+    - "lai_max"
+    - "gvf_max"
+
+  target_var: "QObs(mm/d)"  # observed streamflow
+
+models:
+  lstm:
+    hidden_size: 256
+    num_layers: 2
+    dropout: 0.2
+    batch_size: 256
+    learning_rate: 0.001
+    epochs: 30
+
+  convlstm:
+    hidden_size: 128
+    num_layers: 2
+    kernel_size: 3
+    dropout: 0.2
+    batch_size: 256
+    learning_rate: 0.001
+    epochs: 30
+
+  timesfm:
+    model_name: "google/timesfm-2.0-500m-pytorch"
+    context_length: 512
+    horizon: 1
+
+  chronos:
+    model_name: "amazon/chronos-t5-large"
+    context_length: 512
+    num_samples: 20  # for probabilistic forecasting
+
+  patchtst:
+    model_name: "ibm/patchtst-etth1-forecast"
+    patch_length: 16
+    stride: 8
+
+  lora:
+    rank: 8
+    alpha: 16
+    dropout: 0.05
+    target_modules: ["q_proj", "v_proj"]
+    few_shot_fractions: [0.01, 0.05, 0.10, 0.25]
+
+evaluation:
+  primary_metric: "NSE"
+  metrics:
+    - "NSE"
+    - "KGE"
+    - "RMSE"
+    - "CRPS"
+    - "ECE"
+    - "FDC_slope_error"
+    - "RB_flashiness"
+
+  flow_percentiles: [5, 10, 25, 50, 75, 90, 95, 99]
+  bootstrap_n: 1000
+  confidence_level: 0.95
+
+seed: 42
+num_workers: 4
+device: "cuda"
