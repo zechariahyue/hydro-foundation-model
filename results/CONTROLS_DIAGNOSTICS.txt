@@ -1,0 +1,124 @@
+==============================================================================
+(1) CIRCULARITY CHECK:  is  NSE_persistence == 2*AC1 - 1 ?
+==============================================================================
+  n = 6569
+  Pearson r( 2*AC1-1 , NSE_pers ) = 0.1197
+  median |2*AC1-1  -  NSE_pers|   = 0.0677
+  Spearman rho(AC1, NSE_pers)     = 0.8740
+
+  => If r ~ 1, AC1 and persistence-NSE are the SAME quantity. Any 'FM beats
+     persistence where AC1 is low' result is then partly definitional, and
+     must be re-tested on a ceiling-free skill score (below).
+
+==============================================================================
+(2)+(3) CEILING-FREE RE-TEST + NULL CONTROL
+==============================================================================
+PSS = 1 - (1-NSE_model)/(1-NSE_pers) = fraction of persistence's squared error
+      that the model removes.  PSS>0 = genuine information beyond lag-1.
+      PatchTST is the NULL CONTROL: it has ~zero skill, so if it also shows a
+      rising trend toward flashy basins, the trend is an artefact.
+
+bin              n    AC1  NSEpers  NSEtfm  PSS_tfm    %>0 |  PSS_chr    %>0 |  PSS_pTST    %>0 |  wilcox_p
+Q1 flashy     1643  0.598    0.246   0.402    0.177  67.9% |    0.126  66.5% |    -0.358  29.2% |  2.75e-92
+Q2            1642  0.805    0.643   0.661    0.015  53.0% |    0.008  51.2% |    -1.864   3.0% |  9.13e-08
+Q3            1642  0.911    0.838   0.828   -0.080  37.0% |    0.026  54.8% |    -5.221   0.2% |  2.97e-22
+Q4 damped     1642  0.980    0.965   0.958   -0.206  21.2% |    0.157  75.0% |   -28.445   0.0% |  1.05e-94
+
+READ THIS TABLE AS FOLLOWS:
+  * If PSS_tfm is ~flat across bins -> the dNSE trend was a CEILING ARTEFACT.
+  * If PSS_tfm rises toward flashy basins AND PSS_patchtst does not
+    -> TimesFM genuinely extracts information beyond lag-1 in flashy basins.
+  * If PSS_patchtst ALSO rises -> regression to the mean. Finding is dead.
+
+==============================================================================
+(4) SPEARMAN of PSS (ceiling-free) vs catchment signatures  [correct BH]
+==============================================================================
+
+--- PSS (timesfm) vs signatures ---
+predictor            rho       p_BH      n  sig
+ac1               -0.435  7.71e-300   6563  ***
+ac7               -0.367  1.74e-207   6563  ***
+area              -0.219   3.68e-40   3599  ***
+bfi               -0.175   5.03e-46   6563  ***
+elev_mean         -0.132   3.48e-15   3599  ***
+aridity           -0.122   3.32e-13   3599  ***
+regulation        -0.064   4.93e-03   2046  **
+p_seasonality     -0.049   5.70e-03   3373  **
+fdc_slope         +0.021   9.08e-02   6555  ns
+frac_snow         +0.027   1.23e-01   3368  ns
+zero_q_frac       +0.067   9.76e-08   6563  ***
+q_cv              +0.165   6.47e-41   6563  ***
+rbi               +0.348  2.54e-185   6563  ***
+
+--- PSS (patchtst) vs signatures ---
+predictor            rho       p_BH      n  sig
+ac1               -0.857   0.00e+00   6563  ***
+ac7               -0.780   0.00e+00   6563  ***
+bfi               -0.422  2.84e-281   6563  ***
+area              -0.274   2.48e-62   3599  ***
+elev_mean         -0.140   5.57e-17   3599  ***
+aridity           -0.053   1.91e-03   3599  **
+frac_snow         -0.032   6.75e-02   3368  ns
+regulation        -0.000   9.99e-01   2046  ns
+p_seasonality     +0.037   3.74e-02   3373  *
+fdc_slope         +0.045   3.81e-04   6555  ***
+zero_q_frac       +0.184   1.41e-50   6563  ***
+q_cv              +0.399  3.55e-249   6563  ***
+rbi               +0.748   0.00e+00   6563  ***
+
+==============================================================================
+(5) PARTIAL SPEARMAN: does the memory effect survive conditioning on NSE_pers?
+    partial rho(Y, ac1 | NSE_pers) = Pearson of rank-residuals after regressing
+    rank(Y) and rank(ac1) on rank(NSE_pers). Also a within-decile check.
+==============================================================================
+
+--- timesfm  (n=6569) ---
+  dnse  vs ac1 : raw rho=-0.247   partial rho | NSE_pers = +0.271  (p=7.68e-111, n=6569)
+  pss   vs ac1 : raw rho=-0.435   partial rho | NSE_pers = +0.254  (p=4.82e-97, n=6563)
+  win   vs ac1 : raw rho=-0.362   partial rho | NSE_pers = +0.149  (p=6.69e-34, n=6569)
+  within NSE_pers deciles (dnse vs ac1):  decile  rho    win%
+       0  -0.102   97.0   (NSE_pers -1153.96..+0.06)
+       1  +0.349   71.4   (NSE_pers +0.06..+0.37)
+       2  +0.204   59.7   (NSE_pers +0.37..+0.55)
+       3  +0.220   54.2   (NSE_pers +0.56..+0.68)
+       4  +0.223   38.1   (NSE_pers +0.68..+0.77)
+       5  +0.226   40.9   (NSE_pers +0.77..+0.84)
+       6  +0.299   29.8   (NSE_pers +0.84..+0.89)
+       7  +0.379   28.2   (NSE_pers +0.89..+0.94)
+       8  +0.315   20.7   (NSE_pers +0.94..+0.98)
+       9  +0.504    7.6   (NSE_pers +0.98..+1.00)
+
+--- chronos  (n=6569) ---
+  dnse  vs ac1 : raw rho=-0.194   partial rho | NSE_pers = +0.231  (p=4.20e-80, n=6569)
+  pss   vs ac1 : raw rho=+0.036   partial rho | NSE_pers = +0.260  (p=8.35e-102, n=6563)
+  win   vs ac1 : raw rho=+0.075   partial rho | NSE_pers = +0.215  (p=1.10e-69, n=6569)
+  within NSE_pers deciles (dnse vs ac1):  decile  rho    win%
+       0  -0.152   92.1   (NSE_pers -1153.96..+0.06)
+       1  +0.221   65.9   (NSE_pers +0.06..+0.37)
+       2  +0.132   54.8   (NSE_pers +0.37..+0.55)
+       3  +0.255   51.9   (NSE_pers +0.56..+0.68)
+       4  +0.225   46.4   (NSE_pers +0.68..+0.77)
+       5  +0.276   52.1   (NSE_pers +0.77..+0.84)
+       6  +0.243   51.3   (NSE_pers +0.84..+0.89)
+       7  +0.305   57.8   (NSE_pers +0.89..+0.94)
+       8  +0.274   67.6   (NSE_pers +0.94..+0.98)
+       9  -0.017   78.4   (NSE_pers +0.98..+1.00)
+
+--- patchtst  (n=6569) ---
+  dnse  vs ac1 : raw rho=-0.777   partial rho | NSE_pers = +0.032  (p=9.49e-03, n=6569)
+  pss   vs ac1 : raw rho=-0.857   partial rho | NSE_pers = +0.003  (p=8.39e-01, n=6563)
+  win   vs ac1 : raw rho=-0.390   partial rho | NSE_pers = +0.049  (p=7.22e-05, n=6569)
+  within NSE_pers deciles (dnse vs ac1):  decile  rho    win%
+       0  -0.215   80.8   (NSE_pers -1153.96..+0.06)
+       1  -0.193    0.2   (NSE_pers +0.06..+0.37)
+       2  -0.115    0.0   (NSE_pers +0.37..+0.55)
+       3  -0.090    0.0   (NSE_pers +0.56..+0.68)
+       4  -0.055    0.0   (NSE_pers +0.68..+0.77)
+       5  +0.029    0.0   (NSE_pers +0.77..+0.84)
+       6  -0.057    0.0   (NSE_pers +0.84..+0.89)
+       7  -0.096    0.0   (NSE_pers +0.89..+0.94)
+       8  -0.121    0.0   (NSE_pers +0.94..+0.98)
+       9  +0.142    0.0   (NSE_pers +0.98..+1.00)
+
+READ: if partial rho keeps the sign of raw rho and stays clearly non-zero,
+      the memory effect is not baseline-conditioning in disguise.

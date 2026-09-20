@@ -1,0 +1,13 @@
+FAIR GLOBAL LSTM -- MATCHED protocol (FM-identical test series; restricted to FM basin set; identical target points / n_predictions; per-basin z-score from each basin's pre-test history):
+  Dataset   n(LSTM)  median NSE [95% CI]      vs Persistence(BH)  vs TimesFM(BH)   (TFM median)
+  US        671      0.729 [0.691, 0.752]     ***                 ns               (0.707)
+  BR        3276     0.839 [0.830, 0.851]     ***                 ***              (0.816)
+  CL        384      0.878 [0.854, 0.896]     ***                 ***              (0.865)
+  AUS       561      0.651 [0.615, 0.687]     ***                 **               (0.607)
+  LamaH     875      0.732 [0.704, 0.756]     ***                 ***              (0.677)
+  IND       222      0.660 [0.591, 0.726]     **                  ns               (0.650)
+SUMMARY: fair LSTM is the BEST model in all 6 (best vs persistence AND vs TimesFM by median).
+  - beats persistence significantly in all 6.
+  - beats TimesFM significantly in 4 (BR,CL,AUS,LamaH); statistically TIED in US (+0.011, ns) and IND (+0.027, ns).
+  - TimesFM (zero-shot) is 0.01-0.06 NSE below the trained LSTM (US .022/BR .023/CL .013/AUS .044/LamaH .055/IND .010), using NO local training data.
+  - n_predictions identical to FM per dataset; LSTM basin set is a subset of FM basins (basins with enough pre-test history).

@@ -8,6 +8,7 @@ and renders two maps:
 cartopy/geopandas are not installed, so this draws a clean lon/lat scatter
 (global extent, graticule) -- still a genuine per-basin distribution.
 """
+import os
 import io, re, zipfile
 import numpy as np
 import pandas as pd
@@ -15,11 +16,9 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from pathlib import Path
-import os
 
-RES = Path(os.environ.get("RESULTS_DIR", "results"))
+RES = Path("experiments/results")
 FIG = Path(os.environ.get("FIGURES_DIR", "figures"))
-RAW = os.environ.get("CAMELS_RAW_DIR", "data/raw")
 
 
 def norm(x):
@@ -31,12 +30,12 @@ def norm(x):
 
 # ---- per-dataset coordinate loaders -> dict{norm_id: (lat, lon)} ----
 def coords_us():
-    df = pd.read_csv(f"{RAW}/CAMELS/camels_topo.txt", sep=";")
+    df = pd.read_csv(str(Path(os.environ.get("CAMELS_RAW_DIR", "data/raw")) / "CAMELS/camels_topo.txt"), sep=";")
     return {norm(r.gauge_id): (r.gauge_lat, r.gauge_lon) for r in df.itertuples()}
 
 
 def coords_br():
-    zf = zipfile.ZipFile(f"{RAW}/CAMELS-BR/01_CAMELS_BR_attributes.zip")
+    zf = zipfile.ZipFile(str(Path(os.environ.get("CAMELS_RAW_DIR", "data/raw")) / "CAMELS-BR/01_CAMELS_BR_attributes.zip"))
     df = pd.read_csv(io.BytesIO(zf.read("01_CAMELS_BR_attributes/camels_br_location.txt")),
                      sep=r"\s+")
     return {norm(r.gauge_id): (r.gauge_lat, r.gauge_lon) for r in df.itertuples()}
@@ -44,7 +43,7 @@ def coords_br():
 
 def coords_cl():
     # transposed: rows = attributes, columns = gauge_id
-    df = pd.read_csv(f"{RAW}/CAMELS-CL/extracted/1_CAMELScl_attributes.txt",
+    df = pd.read_csv(str(Path(os.environ.get("CAMELS_RAW_DIR", "data/raw")) / "CAMELS-CL/extracted/1_CAMELScl_attributes.txt"),
                      sep="\t", index_col=0)
     lat = df.loc["gauge_lat"].astype(float)
     lon = df.loc["gauge_lon"].astype(float)
@@ -52,18 +51,18 @@ def coords_cl():
 
 
 def coords_aus():
-    df = pd.read_csv(f"{RAW}/CAMELS-AUS/CAMELS_AUS_Attributes&Indices_MasterTable.csv")
+    df = pd.read_csv(str(Path(os.environ.get("CAMELS_RAW_DIR", "data/raw")) / "CAMELS-AUS/CAMELS_AUS_Attributes&Indices_MasterTable.csv"))
     return {norm(r.station_id): (r.lat_outlet, r.long_outlet) for r in df.itertuples()}
 
 
 def coords_lamah():
-    df = pd.read_csv(f"{RAW}/LamaH-CE/extracted/D_gauges/1_attributes/Gauge_attributes.csv",
+    df = pd.read_csv(str(Path(os.environ.get("CAMELS_RAW_DIR", "data/raw")) / "LamaH-CE/extracted/D_gauges/1_attributes/Gauge_attributes.csv"),
                      sep=";")
     return {norm(r.ID): (r.lat, r.lon) for r in df.itertuples()}
 
 
 def coords_ind():
-    zf = zipfile.ZipFile(f"{RAW}/Camels-IND/CAMELS_IND_All_Catchments.zip")
+    zf = zipfile.ZipFile(str(Path(os.environ.get("CAMELS_RAW_DIR", "data/raw")) / "Camels-IND/CAMELS_IND_All_Catchments.zip"))
     df = pd.read_csv(io.BytesIO(zf.read("attributes_csv/camels_ind_topo.csv")))
     return {norm(r.gauge_id): (r.cwc_lat, r.cwc_lon) for r in df.itertuples()}
 

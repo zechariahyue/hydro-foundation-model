@@ -1,0 +1,25 @@
+======================================================================================
+RAINFALL CEILING -- Chronos (20 samples) vs TimesFM, stride 3, same basins/points
+======================================================================================
+basins with both models: 1174
+
+--- chronos ---
+  median per-basin wet/dry |residual| ratio = 7.52; wet>dry in 97.2% of basins
+  Wilcoxon wet vs dry: p = 3.6e-191
+  Spearman(rho_1, wet/dry) = -0.487  p=7.1e-71
+  Spearman(rho_1, linear oracle gain) = -0.163  p=1.8e-08
+
+--- timesfm ---
+  median per-basin wet/dry |residual| ratio = 6.21; wet>dry in 96.1% of basins
+  Wilcoxon wet vs dry: p = 3.2e-190
+  Spearman(rho_1, wet/dry) = -0.602  p=1.1e-116
+  Spearman(rho_1, linear oracle gain) = -0.089  p=2.3e-03
+
+bin             n    ac1 | wet/dry CHR wet/dry TFM | lin.gain CHR  shuf CHR lin.gain TFM  shuf TFM
+Q1 flashy     294  0.469 |       10.12       10.58 |        7.9%    -0.3%       11.7%     0.0%
+Q2            293  0.677 |        9.41        7.75 |       10.0%    -0.3%       17.9%     0.3%
+Q3            293  0.811 |        7.66        5.80 |       10.0%    -1.2%       20.5%    -0.3%
+Q4 damped     294  0.956 |        2.73        2.46 |       -0.4%    -2.3%        3.7%    -0.9%
+
+Paired wet/dry ratio, Chronos minus TimesFM: median +0.71, Wilcoxon p = 1.4e-36
+Median NSE on these points: Chronos 0.517, TimesFM 0.575

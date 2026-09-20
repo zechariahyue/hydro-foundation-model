@@ -1,0 +1,48 @@
+
+=== PHYSICAL DIAGNOSTICS SUMMARY (medians) ===
+
+Dataset        Model         FDC_KGE   PBIAS%    tail95  Flash.R
+-----------------------------------------------------------------
+CAMELS-US      chronos         0.786     -9.1     527.7    0.924
+CAMELS-US      timesfm         0.572    -18.3     627.9    0.815
+CAMELS-US      patchtst        0.133     -0.5     882.5    0.022
+CAMELS-US      persistence     1.000     -0.0     674.5    1.000
+CAMELS-BR      chronos         0.893     -3.7      35.8    0.991
+CAMELS-BR      timesfm         0.798     -7.7      41.2    0.880
+CAMELS-BR      patchtst        0.227      3.0      91.6    0.029
+CAMELS-BR      persistence     1.000      0.0      37.6    1.000
+CAMELS-CL      chronos         0.901     -3.1       1.9    0.988
+CAMELS-CL      timesfm         0.834     -6.4       2.4    0.882
+CAMELS-CL      patchtst        0.235      1.7       5.5    0.037
+CAMELS-CL      persistence     1.000     -0.0       2.5    1.000
+CAMELS-AUS     chronos         0.661    -16.7       3.4    0.907
+CAMELS-AUS     timesfm         0.429    -29.0       3.5    0.821
+CAMELS-AUS     patchtst        0.057      0.8       4.5    0.021
+CAMELS-AUS     persistence     1.000      0.0       3.8    1.000
+LamaH-CE       chronos         0.831     -6.8       7.0    0.895
+LamaH-CE       timesfm         0.755     -8.2       6.7    0.797
+LamaH-CE       patchtst        0.187      0.3      10.6    0.024
+LamaH-CE       persistence     1.000     -0.0       6.5    1.000
+CAMELS-IND     chronos         0.780    -11.6     499.2    0.981
+CAMELS-IND     timesfm         0.514    -26.3     485.1    0.792
+CAMELS-IND     patchtst        0.080      0.2     614.0    0.026
+
+=== LATEX TABLE 3 ROWS (FDC_KGE | PBIAS | flashiness ratio) ===
+
+% FDC KGE
+CAMELS-US & 0.786 & 0.572 & 0.133 & 1.000 \\
+CAMELS-BR & 0.893 & 0.798 & 0.227 & 1.000 \\
+CAMELS-CL & 0.901 & 0.834 & 0.235 & 1.000 \\
+CAMELS-AUS & 0.661 & 0.429 & 0.057 & 1.000 \\
+LamaH-CE & 0.831 & 0.755 & 0.187 & 1.000 \\
+CAMELS-IND & 0.780 & 0.514 & 0.080 & --- \\
+
+% PBIAS (%)
+CAMELS-US & -9.1 & -18.3 & -0.5 & -0.0 \\
+CAMELS-BR & -3.7 & -7.7 & 3.0 & 0.0 \\
+CAMELS-CL & -3.1 & -6.4 & 1.7 & -0.0 \\
+CAMELS-AUS & -16.7 & -29.0 & 0.8 & 0.0 \\
+LamaH-CE & -6.8 & -8.2 & 0.3 & -0.0 \\
+CAMELS-IND & -11.6 & -26.3 & 0.2 & --- \\
+
+Done. Saved to experiments/results/physical_diagnostics.csv

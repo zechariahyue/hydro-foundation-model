@@ -4,6 +4,7 @@ Unified PyTorch data loader for multi-basin streamflow forecasting.
 Loads preprocessed parquet files and serves (forcing_seq, static_attrs) -> streamflow pairs.
 """
 
+import os
 import sys
 import numpy as np
 import pandas as pd

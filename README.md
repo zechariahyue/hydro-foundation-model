@@ -1,96 +1,90 @@
-# An Open Benchmark of Time-Series Foundation Models for Streamflow Forecasting
+# Hydrograph memory decides where a foundation model improves streamflow forecasts
 
-Official code for **"An Open Benchmark of Time-Series Foundation Models for Zero-Shot and Few-Shot Streamflow Forecasting Across 6,569 Global Basins"** — submitted to *Journal of Hydrology*.
+Code, per-basin diagnostics and figures for **"Hydrograph memory decides where a foundation model
+improves streamflow forecasts, and rainfall sets its ceiling"** (Yue Zhu, Qingyang Liu) — submitted
+to *Environmental Research Letters*, 2026.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
 ---
 
-## Overview
+## What this is
 
-We benchmark three time-series foundation models — **TimesFM**, **Chronos**, and **PatchTST** — for one-day-ahead daily streamflow forecasting across **6,569 catchments** from six CAMELS-family archives spanning five continents (CAMELS-US, -BR, -CL, -AUS, -IND, and LamaH-CE). The foundation models are used in their native **univariate** mode (past discharge only; no climate forcings or static attributes). Every model is evaluated under a **single consistent protocol** — the most recent five years of each basin's record, scored on identical one-day-ahead targets at a seven-day stride — against two baselines: **lag-1 persistence** and a **fairly trained, per-basin-standardised global LSTM** (the supervised model a data-rich agency would actually deploy).
+A benchmark of two general-purpose time-series foundation models (**TimesFM**, **Chronos**) and a
+non-hydrological Transformer control (**PatchTST**) for one-day-ahead daily streamflow forecasting
+across **6,569 catchments** from six CAMELS-family archives on five continents (CAMELS-US, -BR, -CL,
+-AUS, -IND, LamaH-CE), under one protocol: the most recent five years of each basin's record, every
+model scored on identical one-day-ahead target points at a seven-day stride, against **lag-1
+persistence**, a **fitted AR(2)** on the same 512-day context, and a **fairly trained global LSTM**.
+All models are univariate (past discharge only), so the setting is *data-scarce*, not ungauged.
 
-**Key findings**
+The paper's question is hydrological, not which model wins: **which environmental conditions decide
+whether a pre-trained model adds skill?**
 
-1. **TimesFM** is the strongest zero-shot model in all six datasets (median NSE 0.61–0.87), but its advantage over persistence is **regime-dependent**: significant in variable-flow basins (CAMELS-US, CAMELS-AUS), a tie in the perennial South-American basins (CAMELS-BR, CAMELS-CL), and below persistence in Central Europe (LamaH-CE).
-2. **Chronos** does not significantly beat persistence in any region.
-3. **PatchTST** shows negligible skill (median NSE ≈ 0), indicating that **pre-training domain coverage — not architecture alone — governs transfer**.
-4. A **fairly trained global LSTM is the most accurate model overall**, but only where multi-year local records exist to train it. Zero-shot **TimesFM lands within 0.01–0.06 NSE** of that trained LSTM using **no** target-basin training data; the deployable value of foundation models is therefore **data efficiency** in basins where a supervised model cannot yet be built.
-5. **Few-shot LoRA fine-tuning of Chronos yields no meaningful gain** over zero-shot (best ΔNSE within ±0.015), and is robust to LoRA rank.
+## Findings
 
----
+1. **Hydrograph memory predicts zero-shot skill; catchment descriptors do not.** Spearman ρ between
+   zero-shot NSE and lag-1 flow autocorrelation is +0.85 (TimesFM) and +0.86 (Chronos), n = 6,569;
+   aridity and flow regulation are not significant. Static attributes supplied as covariates change
+   skill by ΔNSE = +9×10⁻⁹.
+2. **Where the models add value differs.** TimesFM beats persistence in 67.9 % of the flashiest
+   memory quartile but only 21.2 % of the most damped, where it degrades a forecast that already
+   attains NSE 0.97. Chronos improves on persistence modestly in every quartile
+   (66.5 / 51.2 / 54.8 / 74.9 %), about as much as a fitted AR(2) does.
+3. **The two large models are near-equal.** TimesFM has the higher median in five archives and
+   Chronos in CAMELS-BR; the paired difference is significant only in CAMELS-US (TimesFM) and
+   CAMELS-BR (Chronos). PatchTST has no skill anywhere.
+4. **Rainfall sets the ceiling.** On the 1,230 basins with daily precipitation, TimesFM's residual is
+   6.5× larger on rain days than dry days (Chronos 7.5×), in 97 % of basins, and the concentration
+   strengthens as memory weakens. An oracle given the observed precipitation recovers only 8–28 % of
+   the residual; LoRA fine-tuning and locally fitted forcings recover none of it.
+5. A fairly trained global LSTM is the most accurate model where a multi-year local record exists;
+   zero-shot TimesFM lands within 0.01–0.06 NSE of it with no target-basin training.
 
-## Results
+## Zero-shot results — median NSE (last five years, stride 7, identical targets)
 
-### Zero-shot performance — median NSE (last-5-year window, stride-7, identical targets)
+| Dataset | Basins | Chronos | TimesFM | PatchTST | Persistence | AR(2) | LSTM (global, fair) |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| CAMELS-US  | 671   | 0.661 | **0.707** | −0.021 | 0.585 | 0.646 | 0.729 |
+| CAMELS-BR  | 3,836 | **0.822** | 0.812 | −0.010 | 0.821 | 0.825 | 0.839 |
+| CAMELS-CL  | 394   | 0.856 | **0.866** | −0.005 | 0.869 | 0.871 | 0.878 |
+| CAMELS-AUS | 560   | 0.591 | **0.607** |  0.001 | 0.520 | 0.503 | 0.651 |
+| LamaH-CE   | 880   | 0.674 | **0.677** |  0.000 | 0.705 | 0.703 | 0.732 |
+| CAMELS-IND | 228   | 0.595 | **0.647** | −0.003 | 0.636 | 0.615 | 0.660 |
 
-| Dataset | Basins | Chronos | TimesFM | PatchTST | Persistence | **LSTM (global, fair)** |
-|---------|-------:|--------:|--------:|---------:|------------:|------------------------:|
-| CAMELS-US  | 671   | 0.490 | 0.707 | −0.021 | 0.585 | **0.729** |
-| CAMELS-BR  | 3,836 | 0.781 | 0.812 | −0.010 | 0.821 | **0.839** |
-| CAMELS-CL  | 394   | 0.825 | 0.866 | −0.005 | 0.869 | **0.878** |
-| CAMELS-AUS | 560   | 0.433 | 0.607 |  0.001 | 0.520 | **0.651** |
-| LamaH-CE   | 880   | 0.629 | 0.677 |  0.000 | 0.705 | **0.732** |
-| CAMELS-IND | 228   | 0.418 | 0.647 | −0.003 | 0.636 | **0.660** |
+Bold = best foundation model per archive. Chronos point forecasts are the mean of **twenty sampled
+trajectories** (`--num_samples 20`); an earlier single-draw configuration depressed Chronos's NSE
+(e.g. 0.490 on CAMELS-US) and has been superseded — see `results/MANIFEST_LIVE_INPUTS.md`.
 
-Total **6,569** basins. Bold = best model per dataset (the fair global LSTM is strongest in every dataset, but requires a multi-year local training record). A *naive-transfer* LSTM (CAMELS-US weights + source normalisation) collapses across regions (median NSE −0.2 to −302,970) — a pure normalisation artefact, not a property of supervised models.
-
-### Few-shot fine-tuning — Chronos LoRA
-
-Under the matched protocol, few-shot LoRA provides **no meaningful improvement** over zero-shot on any of the three datasets tested (CAMELS-BR, -AUS, -IND): the best fraction stays within **±0.015 NSE** of the zero-shot baseline, and the response is flat across data fractions. A from-scratch multivariate LSTM (discharge + forcings) trained on the same local data does *worse* still. The foundation model's pre-trained prior — not local adaptation — is what delivers skill in data-scarce basins.
-
-### Sensitivity analyses (all robust)
-
-| Analysis | Result |
-|----------|--------|
-| Context-window length (TimesFM, CAMELS-US) | NSE 0.604 / 0.562 / 0.692 / 0.707 at 90 / 180 / 365 / 512 days — even 90 days beats persistence (0.585) |
-| LoRA rank (Chronos, CAMELS-IND, f=0.10) | NSE within −0.03…+0.01 of zero-shot at ranks 4 / 8 / 16 / 32 — no gain at any rank |
-| CAMELS-BR station quality | Restricting to the 897 quality-selected catchments shifts every model ≤0.007 NSE; ordering unchanged |
-
----
-
-## Repository Structure
+## Repository structure
 
 ```
-foundation_model/
-├── models/
-│   ├── baselines.py                  # LSTM / ConvLSTM architectures
-│   ├── train_baselines.py            # Train LSTM/ConvLSTM (naive-transfer baseline)
-│   ├── run_foundation_models.py      # Zero-shot TimesFM, Chronos, PatchTST inference
-│   ├── run_global_lstm.py            # Fair per-dataset global LSTM (per-basin z-score, matched targets)
-│   ├── run_few_shot_lora.py          # Chronos LoRA few-shot fine-tuning (--lora_rank knob)
-│   ├── run_few_shot_multivariate.py  # From-scratch uni/multivariate few-shot LSTM
-│   └── run_attribute_ablation.py     # TimesFM in-context covariate ablation (static attrs / forcings)
-│
-├── evaluation/
-│   ├── metrics.py                    # NSE, KGE, RMSE, PBIAS, FDC-KGE, tail-RMSE, CRPS
-│   ├── compute_bootstrap_stats.py    # Bootstrap CIs + Wilcoxon (Benjamini–Hochberg)
-│   ├── eval_baselines_on_targets.py  # Evaluate trained LSTM on target basins
-│   ├── reliability_diagrams.py       # Chronos probabilistic reliability by flow regime
-│   ├── seasonal_bias.py              # Seasonal performance decomposition
-│   └── generate_figures.py           # Reproduce paper figures
-│
-├── analysis/
-│   ├── physical_diagnostics.py       # FDC-KGE, PBIAS physical metrics
-│   ├── sensitivity_analysis.py       # Context-length sensitivity
-│   ├── build_real_basin_map.py       # Per-basin geographic / spatial-skill maps
-│   ├── compute_statistics.py         # Summary statistics
-│   └── generate_figures.py           # Analysis figures
-│
-├── data/
-│   ├── dataloader.py                 # Multi-basin dataset loader
-│   ├── preprocess_camels.py          # Preprocess CAMELS-US/BR/CL/AUS/LamaH-CE
-│   └── preprocess_camels_ind.py      # Preprocess CAMELS-IND
-│
-├── configs/experiment_config.yaml    # Hyperparameters, protocol, model checkpoints
-├── results/    # generated CSVs    (gitignored)
-├── figures/    # generated figures (gitignored)
-├── requirements.txt
-└── README.md
+models/
+  run_foundation_models.py   zero-shot TimesFM / Chronos / PatchTST / persistence (--num_samples, --batch_size)
+  run_ar_baseline.py         fitted AR(p) on each 512-day context, identical target points
+  run_global_lstm.py         fair per-dataset global LSTM (per-basin z-score, matched targets)
+  run_few_shot_lora.py       Chronos LoRA few-shot (--lora_rank)
+  run_few_shot_multivariate.py, run_attribute_ablation.py, train_baselines.py, baselines.py
+analysis/
+  build_basin_attributes.py  flow signatures (scale-invariant) + archive attributes -> results/basin_attributes.csv
+  hydrological_controls.py   Spearman / importance / memory-quartile analysis
+  controls_diagnostics.py    circularity, ceiling (PSS), regression-to-mean, partial correlation
+  archive_level_controls.py  archive-level replication and the CAMELS-CL analysis
+  ar_baseline_analysis.py    TimesFM / Chronos vs fitted AR(2) by memory quartile
+  rainfall_ceiling_test_v2.py, rainfall_ceiling_chronos.py, figure_rainfall_ceiling.py
+  normalise_tail_rmse.py, physical_diagnostics.py, br_quality_subset_check.py, sensitivity_analysis.py
+  figure_hydrological_controls.py, figure_zero_shot_overview.py, regenerate_l5s7_figures.py,
+  figure_benchmark_design.py, build_real_basin_map.py
+evaluation/
+  metrics.py, assemble_table4_l5s7.py, eval_baselines_on_targets.py, reliability_diagrams.py, seasonal_bias.py
+data/
+  preprocess_camels.py, preprocess_camels_ind.py, fix_camels_br.py, dataloader.py
+results/    per-basin diagnostics for every model x archive (`*_l5s7.csv`), the analysis reports
+            (`*_REPORT.txt`, `CONTROLS_DIAGNOSTICS.txt`, ...) and MANIFEST_LIVE_INPUTS.md,
+            which says which file backs which manuscript number
+figures/    the manuscript and SI figures
 ```
-
----
 
 ## Setup
 
@@ -100,97 +94,82 @@ cd hydro-foundation-model
 pip install -r requirements.txt
 ```
 
-Paths are read from environment variables (with sensible defaults), so nothing is hard-coded:
+Paths come from environment variables with relative defaults:
 
 ```bash
-export CAMELS_DATA_DIR="/path/to/processed/camels"  # per-basin parquet files (default: data/processed)
-export CAMELS_RAW_DIR="/path/to/raw/camels"         # raw archives, for the basin-map script (default: data/raw)
-export RESULTS_DIR="results"                         # output CSVs
-export FIGURES_DIR="figures"                         # output figures
+export CAMELS_DATA_DIR="data/processed"   # per-basin parquet files (column QObs(mm/d) = native units, see paper)
+export CAMELS_RAW_DIR="data/raw"          # raw archives (attribute tables, gauge coordinates)
+export RESULTS_DIR="results"
+export FIGURES_DIR="figures"
+export CKPT_DIR="models/checkpoints"
 ```
 
-### Datasets (public)
+Datasets (all public): CAMELS-US https://ral.ucar.edu/solutions/products/camels · CAMELS-BR
+https://zenodo.org/records/3709337 · CAMELS-CL https://doi.org/10.5194/hess-22-5817-2018 ·
+CAMELS-AUS https://doi.org/10.5194/essd-13-3847-2021 · CAMELS-IND https://doi.org/10.5194/essd-2024-560 ·
+LamaH-CE https://zenodo.org/records/5153305.
 
-| Dataset | Source |
-|---------|--------|
-| CAMELS-US  | https://ral.ucar.edu/solutions/products/camels |
-| CAMELS-BR  | https://zenodo.org/records/3709337 |
-| CAMELS-CL  | https://doi.org/10.5194/hess-22-5817-2018 |
-| CAMELS-AUS | https://doi.org/10.5194/essd-13-3847-2021 |
-| CAMELS-IND | https://doi.org/10.5194/essd-2024-560 |
-| LamaH-CE   | https://zenodo.org/records/5153305 |
-
-Basin counts in the results table are the number actually evaluated on the five-year window (basins with a sufficient record).
-
----
-
-## Reproducing Paper Results
+## Reproducing the paper
 
 ```bash
-# 1. Preprocess
-python data/preprocess_camels.py
-python data/preprocess_camels_ind.py
+DS="CAMELS-US CAMELS-BR CAMELS-CL CAMELS-AUS LamaH-CE CAMELS-IND"
 
-# 2. Zero-shot foundation models (TimesFM, Chronos, PatchTST) + persistence
-python models/run_foundation_models.py --model all --mode zero_shot \
-       --datasets CAMELS-US CAMELS-BR CAMELS-CL CAMELS-AUS CAMELS-IND LamaH-CE \
-       --last_years 5 --stride 7 --out_suffix _l5s7
+# 1. preprocess
+python data/preprocess_camels.py && python data/preprocess_camels_ind.py
 
-# 3. Fair global-LSTM baseline (matched basins/targets)
-python models/run_global_lstm.py --datasets CAMELS-US CAMELS-BR CAMELS-CL CAMELS-AUS CAMELS-IND LamaH-CE
+# 2. zero-shot benchmark (TimesFM, Chronos with 20 samples, PatchTST, persistence)
+python models/run_foundation_models.py --model all --mode zero_shot --datasets $DS \
+       --last_years 5 --stride 7 --num_samples 20 --batch_size 8 --out_suffix _l5s7
+python models/run_ar_baseline.py --datasets $DS --orders 1 2 5
+python models/run_global_lstm.py --datasets $DS
 
-# 4. Few-shot Chronos LoRA  (sweep --lora_rank for the rank sensitivity)
-for FRAC in 0.01 0.05 0.10 0.25; do
-  for DS in CAMELS-BR CAMELS-AUS CAMELS-IND; do
-    python models/run_few_shot_lora.py --model chronos --fraction $FRAC --dataset $DS --last_years 5
-  done
-done
+# 3. hydrological controls (the paper's centrepiece)
+python analysis/build_basin_attributes.py
+python analysis/hydrological_controls.py
+python analysis/controls_diagnostics.py
+python analysis/archive_level_controls.py
+python analysis/ar_baseline_analysis.py
+python analysis/figure_hydrological_controls.py
 
-# 5. Ablations, diagnostics, sensitivity, maps
+# 4. rainfall ceiling (needs the CAMELS-US / CAMELS-AUS precipitation columns)
+python analysis/rainfall_ceiling_test_v2.py
+python analysis/rainfall_ceiling_chronos.py --stride 3 --num_samples 20
+python analysis/figure_rainfall_ceiling.py
+
+# 5. few-shot, ablation, diagnostics, tables and figures
+python models/run_few_shot_lora.py --model chronos --fraction 0.10 --dataset CAMELS-IND --last_years 5
 python models/run_attribute_ablation.py
-python models/run_few_shot_multivariate.py
-python evaluation/reliability_diagrams.py
-python analysis/physical_diagnostics.py
-python analysis/sensitivity_analysis.py
-python analysis/build_real_basin_map.py
-
-# 6. Statistics and figures
-python evaluation/compute_bootstrap_stats.py
-python evaluation/generate_figures.py
+python analysis/physical_diagnostics.py && python analysis/normalise_tail_rmse.py
+python evaluation/assemble_table4_l5s7.py
+python analysis/regenerate_l5s7_figures.py && python analysis/figure_zero_shot_overview.py
 ```
 
----
+Every number in the manuscript traces to a file listed in `results/MANIFEST_LIVE_INPUTS.md`.
 
-## Model Configuration
+## Configuration
 
 | Parameter | Value |
-|-----------|-------|
-| Evaluation window | most recent 5 years of each basin's record (per-basin) |
-| Evaluation stride | 7 days (uniform across all models) |
-| Context length | 512 days |
-| Forecast horizon | 1 day |
+|---|---|
+| Evaluation window / stride | most recent 5 years per basin / 7 days (all models) |
+| Context / horizon | 512 days / 1 day |
 | TimesFM | `google/timesfm-1.0-200m-pytorch` |
-| Chronos | `amazon/chronos-t5-large` (20 samples for point forecasts; 50 for reliability) |
+| Chronos | `amazon/chronos-t5-large`, 20 sampled trajectories per forecast (50 for reliability diagrams) |
 | PatchTST | `ibm/patchtst-etth1-forecast` |
-| LoRA | rank 8, α 16, target modules q/v |
-| Few-shot fractions | 0.01, 0.05, 0.10, 0.25 |
-
----
+| AR(p) | intercept + p lags, OLS on each 512-day context, p ∈ {1, 2, 5} |
+| LoRA | rank 8, α 16, q/v; fractions 0.01–0.25 (both few-shot arms scored on a single Chronos draw) |
 
 ## Citation
 
 ```bibtex
-@article{zhu2025streamflow_benchmark,
-  title   = {An Open Benchmark of Time-Series Foundation Models for Zero-Shot
-             and Few-Shot Streamflow Forecasting Across 6,569 Global Basins},
+@article{zhu2026hydrograph_memory,
+  title   = {Hydrograph memory decides where a foundation model improves streamflow forecasts,
+             and rainfall sets its ceiling},
   author  = {Zhu, Yue and Liu, Qingyang},
-  journal = {Journal of Hydrology},
-  year    = {2025},
-  note    = {Under review}
+  journal = {Environmental Research Letters},
+  year    = {2026},
+  note    = {submitted}
 }
 ```
-
----
 
 ## License
 

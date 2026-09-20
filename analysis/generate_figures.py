@@ -2,6 +2,7 @@
 """
 Generate publication-quality figures from actual experimental data
 """
+import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -21,7 +22,7 @@ plt.rcParams['legend.fontsize'] = 9
 
 # Paths
 RESULTS_DIR = Path("../results")
-FIGURES_DIR = Path("../../paper_material/figures")
+FIGURES_DIR = Path(os.environ.get("FIGURES_DIR", "figures"))
 FIGURES_DIR.mkdir(exist_ok=True, parents=True)
 
 # Color scheme

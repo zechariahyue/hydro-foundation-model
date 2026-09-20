@@ -1,0 +1,58 @@
+target,target_label,predictor,predictor_label,n,spearman_rho,p_value,p_bh
+nse_timesfm,TimesFM zero-shot NSE,ac1,Lag-1 flow autocorrelation,6569,0.8455653767756862,0.0,0.0
+nse_timesfm,TimesFM zero-shot NSE,ac7,Lag-7 flow autocorrelation,6569,0.7886692459263978,0.0,0.0
+nse_timesfm,TimesFM zero-shot NSE,ac30,Lag-30 flow autocorrelation,6568,0.6853297030726214,0.0,0.0
+nse_timesfm,TimesFM zero-shot NSE,bfi,Baseflow index (Lyne-Hollick),6569,0.44931370335533766,0.0,0.0
+nse_timesfm,TimesFM zero-shot NSE,rbi,Richards-Baker flashiness,6569,-0.7566868213625892,0.0,0.0
+nse_timesfm,TimesFM zero-shot NSE,q_skew,Flow skewness,6569,-0.6517859377278009,0.0,0.0
+nse_timesfm,TimesFM zero-shot NSE,q_cv,Flow coefficient of variation,6569,-0.42614251611399706,3.8945463281074676e-288,3.1712734386017954e-287
+d_tfm_pers,TimesFM - persistence (FM value-add),ac1,Lag-1 flow autocorrelation,6569,-0.24707796253741857,5.9525100794868716e-92,4.241163431634396e-91
+nse_timesfm,TimesFM zero-shot NSE,q95_q50,Q95/Q50 ratio,6561,-0.22461731642714183,8.056872177246327e-76,5.102685712256007e-75
+nse_timesfm,TimesFM zero-shot NSE,zero_q_frac,Zero-flow day fraction,6569,-0.21501044346641968,1.4569319033366992e-69,8.304511849019185e-69
+d_tfm_pers,TimesFM - persistence (FM value-add),ac7,Lag-7 flow autocorrelation,6569,-0.18219339603667595,3.907294817059611e-50,2.0246891324763436e-49
+nse_timesfm,TimesFM zero-shot NSE,area,Catchment area,3602,0.23166852192540585,4.297683481113152e-45,2.0413996535287473e-44
+d_tfm_pers,TimesFM - persistence (FM value-add),rbi,Richards-Baker flashiness,6569,0.17119545978359538,2.186228888496795e-44,9.585772818793639e-44
+d_lstm_tfm,LSTM - TimesFM (value of local training),ac7,Lag-7 flow autocorrelation,5978,-0.1734227850478618,1.397276497682657e-41,5.688911454850818e-41
+d_lstm_tfm,LSTM - TimesFM (value of local training),ac30,Lag-30 flow autocorrelation,5977,-0.1608388557374665,6.293034062069663e-36,2.3913529435864717e-35
+d_lstm_tfm,LSTM - TimesFM (value of local training),rbi,Richards-Baker flashiness,5978,0.1502854880929857,1.5445258863838951e-31,5.502373470242626e-31
+d_tfm_pers,TimesFM - persistence (FM value-add),ac30,Lag-30 flow autocorrelation,6568,-0.1406647583472136,2.226150999270305e-30,7.464153350494553e-30
+d_tfm_pers,TimesFM - persistence (FM value-add),q_skew,Flow skewness,6569,0.13643281489469097,1.1513405188475844e-28,3.6459116430173507e-28
+d_tfm_pers,TimesFM - persistence (FM value-add),area,Catchment area,3602,-0.17306590965529692,1.2873137277787564e-25,3.8619411833362687e-25
+d_lstm_tfm,LSTM - TimesFM (value of local training),bfi,Baseflow index (Lyne-Hollick),5978,-0.1287920272718768,1.5635668136734708e-23,4.456165418969392e-23
+d_tfm_pers,TimesFM - persistence (FM value-add),slope_mean,Mean slope,3602,-0.16193938654204906,1.3679361456414811e-22,3.712969538169735e-22
+d_tfm_pers,TimesFM - persistence (FM value-add),elev_mean,Mean elevation,3602,-0.14565422201659484,1.5562096757739203e-18,4.031997796323339e-18
+d_lstm_tfm,LSTM - TimesFM (value of local training),q_skew,Flow skewness,5978,0.10776332620970352,6.56604565409857e-17,1.6272374012331237e-16
+d_lstm_tfm,LSTM - TimesFM (value of local training),ac1,Lag-1 flow autocorrelation,5978,-0.09775875764720741,3.590337270260798e-14,8.527051016869396e-14
+d_tfm_pers,TimesFM - persistence (FM value-add),p_mean,Mean precipitation,3602,-0.1238379160678792,8.752355697659773e-14,1.9955370990664284e-13
+d_tfm_pers,TimesFM - persistence (FM value-add),aridity,Aridity (PET/P),3602,-0.11794910929226324,1.2362918792121776e-12,2.7103321967343894e-12
+d_lstm_tfm,LSTM - TimesFM (value of local training),q95_q50,Q95/Q50 ratio,5971,0.09130562539689403,1.5641191004204883e-12,3.302029211998809e-12
+nse_timesfm,TimesFM zero-shot NSE,elev_mean,Mean elevation,3602,0.11520433312804124,4.0656546131693616e-12,8.276511176809058e-12
+d_tfm_pers,TimesFM - persistence (FM value-add),q_cv,Flow coefficient of variation,6569,0.08231544048044656,2.362089634359376e-11,4.6427279020167046e-11
+nse_timesfm,TimesFM zero-shot NSE,slope_mean,Mean slope,3602,0.10699579126001968,1.212262641590722e-10,2.3032990190223718e-10
+d_lstm_tfm,LSTM - TimesFM (value of local training),q_cv,Flow coefficient of variation,5978,0.07766508093444804,1.8245925560107799e-09,3.3548959900843375e-09
+nse_timesfm,TimesFM zero-shot NSE,p_mean,Mean precipitation,3602,0.09792875757786278,3.874184461776188e-09,6.900891072538835e-09
+d_tfm_pers,TimesFM - persistence (FM value-add),bfi,Baseflow index (Lyne-Hollick),6569,-0.06880119779388875,2.3797744685313063e-08,4.110519536554075e-08
+nse_timesfm,TimesFM zero-shot NSE,forest_frac,Forest fraction,2481,0.09290527335508175,3.564653384128554e-06,5.976036555744929e-06
+nse_timesfm,TimesFM zero-shot NSE,p_seasonality,Precipitation seasonality,3374,-0.07619175991849766,9.402070018284081e-06,1.5311942601205503e-05
+d_tfm_pers,TimesFM - persistence (FM value-add),forest_frac,Forest fraction,2481,0.0735801155710863,0.0002443359215706397,0.0003868652091535129
+d_lstm_tfm,LSTM - TimesFM (value of local training),p_mean,Mean precipitation,3579,0.060563231760910434,0.00028869086531623374,0.0004409056635355395
+d_tfm_pers,TimesFM - persistence (FM value-add),p_seasonality,Precipitation seasonality,3374,-0.062293854779807395,0.000293937109023693,0.0004409056635355395
+d_lstm_tfm,LSTM - TimesFM (value of local training),p_seasonality,Precipitation seasonality,3357,0.055243343295531086,0.0013646196050285278,0.0019944440381186174
+d_tfm_pers,TimesFM - persistence (FM value-add),fdc_slope,Flow-duration-curve slope,6561,0.038078220424200254,0.0020364327055814695,0.002901916605453594
+nse_timesfm,TimesFM zero-shot NSE,fdc_slope,Flow-duration-curve slope,6561,-0.036011843144188586,0.003530197150658369,0.0049078350631104155
+d_lstm_tfm,LSTM - TimesFM (value of local training),zero_q_frac,Zero-flow day fraction,5978,-0.03658453619542053,0.004669642344525345,0.006337371753284397
+d_tfm_pers,TimesFM - persistence (FM value-add),q95_q50,Q95/Q50 ratio,6561,0.0340069899296145,0.0058721185588281885,0.007783971112865273
+nse_timesfm,TimesFM zero-shot NSE,frac_snow,Snow fraction,3369,0.045715641887342506,0.007957216824449062,0.010308212704399923
+d_tfm_pers,TimesFM - persistence (FM value-add),regulation,Regulation / disturbance index,2047,-0.0547456331371594,0.01324011702153474,0.016770814893944004
+d_lstm_tfm,LSTM - TimesFM (value of local training),area,Catchment area,3579,0.036760795975532154,0.027865106492135947,0.03452850152286411
+d_tfm_pers,TimesFM - persistence (FM value-add),zero_q_frac,Zero-flow day fraction,6569,0.02376633896927282,0.054085370837336076,0.06559289654740759
+d_lstm_tfm,LSTM - TimesFM (value of local training),slope_mean,Mean slope,3579,0.029919580502813993,0.07350108498471879,0.08728253841935356
+nse_timesfm,TimesFM zero-shot NSE,regulation,Regulation / disturbance index,2047,-0.030594075238056104,0.16645948660906065,0.19363654564727464
+d_lstm_tfm,LSTM - TimesFM (value of local training),frac_snow,Snow fraction,3352,-0.02273680861467911,0.188153953809787,0.21449550734315717
+nse_timesfm,TimesFM zero-shot NSE,aridity,Aridity (PET/P),3602,-0.01858499139089022,0.26479970832906435,0.2959526151913072
+d_lstm_tfm,LSTM - TimesFM (value of local training),regulation,Regulation / disturbance index,2033,-0.02269182734579908,0.30647350220136443,0.33594210818226483
+d_lstm_tfm,LSTM - TimesFM (value of local training),aridity,Aridity (PET/P),3579,-0.015410012992900842,0.3567201599929607,0.3836424362188445
+d_lstm_tfm,LSTM - TimesFM (value of local training),elev_mean,Mean elevation,3579,0.011351723355515186,0.49720211831132216,0.5248244582175067
+d_tfm_pers,TimesFM - persistence (FM value-add),frac_snow,Snow fraction,3369,0.00926961971014111,0.5906811346817579,0.6121604486701854
+d_lstm_tfm,LSTM - TimesFM (value of local training),fdc_slope,Flow-duration-curve slope,5971,0.003231878424994591,0.8028326057686902,0.8049577316242114
+d_lstm_tfm,LSTM - TimesFM (value of local training),forest_frac,Forest fraction,2464,0.004977162812319133,0.8049577316242114,0.8049577316242114

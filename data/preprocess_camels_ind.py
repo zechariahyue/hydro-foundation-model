@@ -9,6 +9,7 @@ Usage:
     python preprocess_camels_ind.py
 """
 
+import os
 import pandas as pd
 import numpy as np
 from pathlib import Path
@@ -16,8 +17,8 @@ from zipfile import ZipFile
 from tqdm import tqdm
 
 # Paths
-RAW_DIR = Path(os.environ.get("CAMELS_IND_RAW_DIR", "data/raw/CAMELS-IND"))
-OUTPUT_DIR = Path(os.environ.get("CAMELS_DATA_DIR", "data/processed")) / "CAMELS-IND"
+RAW_DIR = Path(str(Path(os.environ.get("CAMELS_RAW_DIR", "data/raw")) / "Camels-IND"))
+OUTPUT_DIR = Path(str(Path(os.environ.get("CAMELS_RAW_DIR", "data/raw")) / "processed_camels/CAMELS-IND"))
 ZIP_FILE = RAW_DIR / "CAMELS_IND_Catchments_Streamflow_Sufficient.zip"
 
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -83,7 +84,7 @@ print(f"   Output directory: {OUTPUT_DIR}")
 
 # Update dataset summary
 print("\n6. Updating dataset summary...")
-summary_file = Path(os.environ.get("CAMELS_DATA_DIR", "data/processed")) / "dataset_summary.csv"
+summary_file = Path(str(Path(os.environ.get("CAMELS_RAW_DIR", "data/raw")) / "processed_camels/dataset_summary.csv"))
 if summary_file.exists():
     summary = pd.read_csv(summary_file, header=None)
     # Append CAMELS-IND

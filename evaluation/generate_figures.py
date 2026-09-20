@@ -1,5 +1,17 @@
 #!/usr/bin/env python3
 """
+DEPRECATED -- pre-`l5s7` protocol. DO NOT RE-RUN to produce manuscript numbers.
+
+This script globs the OLD unsuffixed `{model}_zero_shot_{dataset}.csv` results, which were
+produced on the superseded protocol (undocumented ~15-18 yr windows, MIXED strides across
+models). Re-running it regenerates files that look current but are not, which is exactly the
+contamination the 2026-08-06 review flagged. Its previous outputs are quarantined in
+experiments/results/_deprecated_pre_l5s7/.
+
+The live protocol is last-5-years / uniform stride-7 / identical target points -> `*_l5s7.csv`.
+"""
+
+"""
 Step 8: Generate publication figures from real experimental results.
 Reads CSV results from experiments/results/ and produces figures in figures/.
 
@@ -7,6 +19,7 @@ Usage:
     python generate_figures.py
 """
 
+import os
 import sys
 import numpy as np
 import pandas as pd

@@ -14,6 +14,7 @@ Output:
     Prints a summary table to stdout.
 """
 
+import os
 import sys
 import functools
 import numpy as np

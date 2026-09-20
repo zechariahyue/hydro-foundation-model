@@ -1,0 +1,64 @@
+ARCHIVE-LEVEL CONTROLS + THE CAMELS-CL EXCEPTION
+==============================================================================
+basins: 6,569
+
+GLOBAL rho1 quartiles (pooled, as in the manuscript)
+------------------------------------------------------------------------------
+  cut points: [0.719, 0.867, 0.948]
+  Q1  n= 1643  median rho1=0.598  TimesFM beats persistence in 67.9%
+  Q2  n= 1642  median rho1=0.805  TimesFM beats persistence in 52.9%
+  Q3  n= 1642  median rho1=0.911  TimesFM beats persistence in 36.9%
+  Q4  n= 1642  median rho1=0.980  TimesFM beats persistence in 21.2%
+
+TEST 1 -- does the rule hold ACROSS ARCHIVES, not just across pooled basins?
+------------------------------------------------------------------------------
+Each archive's OWN flashiest (lowest-rho1) quartile:
+  archive          n   median rho1   TimesFM wins
+  CAMELS-US      168         0.466          81.5%
+  CAMELS-AUS     140         0.469          73.6%
+  CAMELS-IND      57         0.526          71.9%
+  LamaH-CE       220         0.613          54.5%
+  CAMELS-BR      959         0.646          65.7%
+  CAMELS-CL       99         0.752          46.5%
+
+  Spearman(median rho1 of archive's flashiest quartile, its win rate) = -0.943  p=0.0048
+  -> a strongly NEGATIVE rho means the memory rule reproduces at the level of whole
+     archives, so the pooled result is not an artefact of CAMELS-BR's 58% share.
+
+TEST 2 -- is CAMELS-CL a genuine exception?
+------------------------------------------------------------------------------
+  CAMELS-CL's own flashiest quartile: n=99, median rho1=0.752
+  (for comparison, the GLOBAL flashiest quartile has median rho1=0.598)
+
+  Where those basins actually sit in the GLOBAL quartiles:
+    Q1:   37 basins
+    Q2:   62 basins
+    Q3:    0 basins
+    Q4:    0 basins
+
+  observed win rate                      : 46.5%
+  predicted from global rule + membership: 58.5%
+  residual (observed - predicted)        : -12.1 points
+
+  Reading: CL's 'flashiest' quartile is flashy only relative to Chile. Not one of its
+  basins reaches the global flashiest quartile's typical memory, so the rule already
+  predicts a low win rate there. Most of the apparent anomaly is a consequence of
+  defining quartiles within archives. A residual shortfall remains and is real.
+
+  What distinguishes CL's flashiest quartile from other archives' flashiest quartiles:
+    attribute                             CL      others    Mann-Whitney p
+    snow fraction                      0.012       0.013          2.71e-01
+    mean elevation (m)              1063.256     394.419          4.62e-23
+    aridity index                      1.184       0.737          2.13e-07
+    precipitation seasonality         -0.993       0.258          5.01e-23
+    baseflow index                     0.570       0.463          2.49e-06
+    Richards-Baker flashiness          0.282       0.453          1.53e-18
+    flow CV                            1.416       1.986          8.56e-06
+    zero-flow fraction                 0.000       0.000          3.11e-08
+
+  These basins are high-elevation Andean catchments with strongly negative
+  precipitation seasonality (winter-dominant precipitation, out of phase with melt),
+  higher baseflow index and LOWER flashiness than other archives' flashiest quartiles.
+  They are damped catchments, and the rule says damped catchments are where a
+  univariate foundation model has least to add.
+

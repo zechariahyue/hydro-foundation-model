@@ -34,7 +34,7 @@ from evaluation.metrics import nse, kge, rmse
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 DATA_DIR = Path(os.environ.get("CAMELS_DATA_DIR", "data/processed"))
 RESULTS_DIR = Path(os.environ.get("RESULTS_DIR", "results"))
-CKPT_DIR = Path(os.environ.get("CKPT_DIR", "checkpoints"))
+CKPT_DIR = Path(os.environ.get("CKPT_DIR", "models/checkpoints"))
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 CKPT_DIR.mkdir(parents=True, exist_ok=True)
 

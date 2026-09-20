@@ -1,0 +1,28 @@
+--- CAMELS-US ---
+  basins: 670
+  forecast: 670
+--- CAMELS-AUS ---
+  basins: 561
+  forecast: 561
+
+======================================================================================
+ORACLE TEST v2 (stride 1, nonlinear oracle) -- median fraction of TimesFM's
+held-out residual variance removed by a RAINFALL-ONLY correction
+======================================================================================
+Each oracle is shown beside ITS OWN shuffled-rainfall null (like-for-like).
+bin             n    ac1  wet/dry   LINEAR  lin.SHUF  NONLINEAR  gbt.SHUF  on pers.
+Q1 flashy     308  0.468    10.54   15.7%     0.2%     10.1%    -1.2%     3.6%
+Q2            307  0.667     7.69   28.0%     0.6%     18.6%    -2.3%    10.8%
+Q3            307  0.803     6.06   28.0%     0.9%     19.6%    -4.3%    14.1%
+Q4 damped     308  0.953     2.53    7.7%     1.0%      2.6%    -6.3%     3.1%
+
+Rank association |residual| vs same-day precipitation (v2 sample, n=1230):
+  positive in 96.2% of basins; median rho = +0.266
+
+Spearman(rho_1, LINEAR    oracle gain) = -0.115  p=5.49e-05
+Spearman(rho_1, NONLINEAR oracle gain) = -0.101  p=3.89e-04
+  NEGATIVE => rainfall explains more of the residual in LOW-memory basins
+              (this is what the paper's rainfall-ceiling claim REQUIRES).
+
+  CAMELS-AUS   n= 560 rho=+0.216 p=2.53e-07 median nonlinear gain=12.5%
+  CAMELS-US    n= 670 rho=-0.307 p=4.30e-16 median nonlinear gain=13.7%

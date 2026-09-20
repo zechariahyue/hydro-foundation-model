@@ -1,0 +1,17 @@
+
+Dataset      Region      Chronos                      TimesFM                      PatchTST               Persistence           
+CAMELS-US    N. America  0.661 [0.619,0.693] n=671***   0.707 [0.684,0.733] n=671***   -0.021 [-0.026,-0.018] n=671*** 0.585 [0.527,0.633] n=671      
+CAMELS-BR    S. America  0.822 [0.810,0.834] n=3836***  0.812 [0.801,0.820] n=3836 (ns) -0.010 [-0.011,-0.008] n=3836*** 0.821 [0.811,0.833] n=3836     
+CAMELS-CL    S. America  0.856 [0.833,0.877] n=394 (ns) 0.866 [0.846,0.886] n=394 (ns) -0.005 [-0.011,0.000] n=394*** 0.869 [0.838,0.886] n=394      
+CAMELS-AUS   Australia   0.591 [0.537,0.620] n=560***   0.607 [0.566,0.637] n=560***   0.001 [-0.001,0.003] n=560***  0.520 [0.461,0.576] n=560      
+LamaH-CE     Europe      0.674 [0.651,0.713] n=880 (ns) 0.677 [0.651,0.712] n=880***   0.000 [-0.002,0.003] n=880***  0.705 [0.675,0.730] n=880      
+CAMELS-IND   Asia        0.595 [0.540,0.645] n=228 (ns) 0.647 [0.589,0.686] n=228 (ns) -0.003 [-0.010,0.000] n=228*** 0.636 [0.559,0.701] n=228      
+
+--- Overall median-NSE ranges (completed datasets only) ---
+  chronos     : 0.591 - 0.856  (6 datasets)
+  timesfm     : 0.607 - 0.866  (6 datasets)
+  patchtst    : -0.021 - 0.001  (6 datasets)
+  persistence : 0.520 - 0.869  (6 datasets)
+  FM (Chronos+TimesFM) overall NSE range: 0.591 - 0.866
+
+  Total basins (TimesFM, completed datasets): 6569

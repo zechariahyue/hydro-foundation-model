@@ -10,6 +10,7 @@ Usage:
     python eval_baselines_on_targets.py --test_start 2000-01-01 --test_end 2017-12-31
 """
 
+import os
 import sys
 import argparse
 import numpy as np
@@ -24,7 +25,7 @@ from evaluation.metrics import nse, kge, rmse
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 DATA_DIR = Path(os.environ.get("CAMELS_DATA_DIR", "data/processed"))
-CKPT_DIR = Path(os.environ.get("CKPT_DIR", "checkpoints"))
+CKPT_DIR = Path(os.environ.get("CKPT_DIR", "models/checkpoints"))
 RESULTS_DIR = Path(os.environ.get("RESULTS_DIR", "results"))
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 

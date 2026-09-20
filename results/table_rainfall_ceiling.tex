@@ -1,0 +1,17 @@
+\begin{table}[t]
+\centering
+\caption{Direct test of the rainfall ceiling on the $1{,}230$ basins with daily precipitation (CAMELS-US, CAMELS-AUS). Errors are TimesFM's one-day-ahead residuals, normalised by each basin's mean flow so that they are comparable across archives. Rain days are $P>1$\,mm, dry days $P\leq0.1$\,mm. The final two columns give the percentage of each basin's \emph{held-out} residual variance removed by a rainfall-only linear correction fitted on the first half of the record; the correction is given the \emph{observed} precipitation on the forecast day, so it is an upper bound on what perfect rainfall knowledge could supply, not a deployable model. The negative control is the \emph{same linear estimator} fitted to shuffled precipitation; pairing this oracle with a higher-capacity shuffled control would overstate the separation, so the null is matched to the estimator.}
+\label{tab:rainfall_ceiling}
+\begin{tabular}{lrrrrrrr}
+\hline
+Memory bin & $n$ & $\rho_1$ & $|e|$ rain & $|e|$ dry & ratio & \multicolumn{2}{c}{\% residual removed} \\
+\cline{7-8}
+ & & & & & & rainfall & shuffled \\
+\hline
+Q1 (flashiest) & 308 & 0.47 & 1.713 & 0.145 & 10.5$\times$ & 15.7\% & 0.2\% \\
+Q2 & 307 & 0.67 & 0.934 & 0.121 & 7.7$\times$ & 28.0\% & 0.6\% \\
+Q3 & 307 & 0.80 & 0.660 & 0.098 & 6.1$\times$ & 28.0\% & 0.9\% \\
+Q4 (most damped) & 308 & 0.95 & 0.283 & 0.096 & 2.5$\times$ & 7.7\% & 1.0\% \\
+\hline
+\end{tabular}
+\end{table}

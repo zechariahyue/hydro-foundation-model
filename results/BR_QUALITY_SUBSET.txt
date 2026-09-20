@@ -1,0 +1,6 @@
+quality-selected ids in zip: 897
+TimesFM              all n=3836 median NSE 0.812 | quality-selected n=893 median NSE 0.809 | shift -0.003
+Chronos              all n=3836 median NSE 0.822 | quality-selected n=893 median NSE 0.823 | shift +0.001
+persistence          all n=3836 median NSE 0.821 | quality-selected n=893 median NSE 0.827 | shift +0.006
+LSTM (global, fair)  all n=3268 median NSE 0.839 | quality-selected n=893 median NSE 0.839 | shift +0.000
+PatchTST             all n=3836 median NSE -0.010 | quality-selected n=893 median NSE -0.003 | shift +0.007

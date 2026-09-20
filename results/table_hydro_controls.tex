@@ -1,0 +1,17 @@
+\begin{table}[t]
+\centering
+\caption{Hydrological control on zero-shot foundation-model skill. Basins ($n=6{,}569$) are binned by the lag-1 autocorrelation of their observed hydrograph. PSS is the persistence skill score, $1-(1-\mathrm{NSE_{model}})/(1-\mathrm{NSE_{pers}})$; because all models are scored on identical target points the observed variance cancels, so PSS is free of the ceiling that compresses $\Delta$NSE in high-memory basins. The final three columns are a sign test---the percentage of basins in which each model beats lag-1 persistence---which is insensitive to both the ceiling and NSE's unbounded negative tail.}
+\label{tab:hydro_controls}
+\begin{tabular}{lrrrrrrrr}
+\hline
+Memory bin & $n$ & $\rho_1$ & NSE$_{\text{pers}}$ & NSE$_{\text{TFM}}$ & PSS$_{\text{TFM}}$ & \multicolumn{3}{c}{\% basins beating persistence} \\
+\cline{7-9}
+ & & & & & & TimesFM & Chronos & PatchTST \\
+\hline
+Q1 (flashiest) & 1,643 & 0.60 & 0.246 & 0.402 & +0.177 & 67.9\% & 66.5\% & 29.2\% \\
+Q2 & 1,642 & 0.80 & 0.643 & 0.661 & +0.015 & 52.9\% & 51.2\% & 3.0\% \\
+Q3 & 1,642 & 0.91 & 0.838 & 0.828 & -0.080 & 36.9\% & 54.8\% & 0.2\% \\
+Q4 (most damped) & 1,642 & 0.98 & 0.965 & 0.958 & -0.206 & 21.2\% & 74.9\% & 0.0\% \\
+\hline
+\end{tabular}
+\end{table}

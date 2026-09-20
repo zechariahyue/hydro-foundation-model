@@ -12,6 +12,7 @@ Outputs:
 Usage: python experiments/analysis/physical_diagnostics.py
 """
 
+import os
 import numpy as np
 import pandas as pd
 from pathlib import Path

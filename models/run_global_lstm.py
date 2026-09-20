@@ -32,8 +32,10 @@ from pathlib import Path
 import torch
 import torch.nn as nn
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from evaluation.metrics import compute_all_metrics  # noqa: E402
+HERE = Path(__file__).resolve()
+REPO = HERE.parents[1]
+sys.path.insert(0, str(REPO / "evaluation"))
+from metrics import compute_all_metrics  # noqa: E402
 
 DATA_DIR = Path(os.environ.get("CAMELS_DATA_DIR", "data/processed"))
 RESULTS_DIR = Path(os.environ.get("RESULTS_DIR", "results"))

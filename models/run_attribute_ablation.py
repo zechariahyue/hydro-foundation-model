@@ -16,6 +16,7 @@ Usage:
   python run_attribute_ablation.py --n_basins 40 --windows_per_basin 15   # pilot
   python run_attribute_ablation.py --n_basins 671 --windows_per_basin 40  # full
 """
+import os
 import argparse, json, time, sys, os
 from pathlib import Path
 import numpy as np
@@ -25,7 +26,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from evaluation.metrics import nse  # same NSE used everywhere else
 
 DATA_DIR = Path(os.environ.get("CAMELS_DATA_DIR", "data/processed")) / "CAMELS-US"
-ATTR_CSV = Path(os.environ.get("CAMELS_ATTR_CSV", "data/attributes/attributes_camels_harmonized.csv"))
+ATTR_CSV = Path(os.environ.get("CAMELS_DATA_DIR", "data/processed")) / "attributes" / "attributes_camels_harmonized.csv"
 OUT_DIR = Path(os.environ.get("RESULTS_DIR", "results"))
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 

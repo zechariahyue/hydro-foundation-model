@@ -29,13 +29,19 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from evaluation.metrics import compute_all_metrics, crps_gaussian, nse
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+STRIDE = 7  # uniform evaluation stride across ALL models (set from --stride in main)
 DATA_DIR = Path(os.environ.get("CAMELS_DATA_DIR", "data/processed"))
 RESULTS_DIR = Path(os.environ.get("RESULTS_DIR", "results"))
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def load_basin_series(dataset_name: str, date_start: str = None, date_end: str = None):
-    """Load all basin discharge series for a dataset."""
+def load_basin_series(dataset_name: str, date_start: str = None, date_end: str = None,
+                      last_years: int = None):
+    """Load all basin discharge series for a dataset.
+
+    If last_years is set, each basin is truncated to the most recent `last_years`
+    years of its own available record (a consistent, leakage-free held-out window
+    for zero-shot models, robust to per-dataset record extents)."""
     ds_dir = DATA_DIR / dataset_name
     if not ds_dir.exists():
         print(f"  Warning: {ds_dir} not found")
@@ -60,6 +66,20 @@ def load_basin_series(dataset_name: str, date_start: str = None, date_end: str =
             df = df[df.index >= pd.Timestamp(date_start)]
         if date_end:
             df = df[df.index <= pd.Timestamp(date_end)]
+        if last_years:
+            # Use date-based truncation when the index is a genuine daily date series;
+            # fall back to position-based (last N*365 rows) when the index is degenerate
+            # (e.g., CAMELS-BR, whose dates are corrupted to ~30 unique values).
+            n_keep = int(last_years * 365.25)
+            try:
+                ndates = df.index.normalize().nunique()
+            except Exception:
+                ndates = 0
+            if ndates >= 0.5 * len(df):
+                cutoff = df.index.max() - pd.DateOffset(years=last_years)
+                df = df[df.index > cutoff]
+            else:
+                df = df.iloc[-n_keep:]
 
         if "QObs(mm/d)" not in df.columns:
             continue
@@ -103,7 +123,7 @@ def run_timesfm_zero_shot(basins: dict, context_length: int = 512, horizon: int 
             continue
 
         contexts, targets = [], []
-        step = max(1, horizon)
+        step = STRIDE
         for start in range(0, len(q) - context_length - horizon + 1, step):
             contexts.append(q[start: start + context_length])
             targets.append(q[start + context_length: start + context_length + horizon])
@@ -149,7 +169,7 @@ def _run_timesfm_transformers(basins: dict, context_length: int = 512, horizon: 
         all_obs = []
         all_pred = []
 
-        for start in range(0, len(q) - context_length - horizon + 1, max(horizon, 7)):
+        for start in range(0, len(q) - context_length - horizon + 1, STRIDE):
             context = torch.tensor(q[start: start + context_length]).unsqueeze(0).to(DEVICE)
             target = q[start + context_length: start + context_length + horizon]
 
@@ -175,7 +195,7 @@ def _run_timesfm_transformers(basins: dict, context_length: int = 512, horizon: 
 # ── Chronos ──────────────────────────────────────────────────────────────────
 
 def run_chronos_zero_shot(basins: dict, context_length: int = 512,
-                          horizon: int = 1, num_samples: int = 1):
+                          horizon: int = 1, num_samples: int = 1, batch_size: int = 32):
     """Run Chronos zero-shot probabilistic inference."""
     print("Loading Chronos model...")
     try:
@@ -195,7 +215,7 @@ def run_chronos_zero_shot(basins: dict, context_length: int = 512,
             torch_dtype=torch.float32,
         )
 
-    BATCH_SIZE = 32
+    BATCH_SIZE = batch_size
     results = {}
 
     for bid, q_series in tqdm(basins.items(), desc="Chronos zero-shot"):
@@ -204,7 +224,7 @@ def run_chronos_zero_shot(basins: dict, context_length: int = 512,
             continue
 
         contexts, targets = [], []
-        for start in range(0, len(q) - context_length - horizon + 1, max(horizon, 7)):
+        for start in range(0, len(q) - context_length - horizon + 1, STRIDE):
             contexts.append(torch.tensor(q[start: start + context_length]))
             targets.append(q[start + context_length: start + context_length + horizon])
 
@@ -270,7 +290,7 @@ def run_patchtst_zero_shot(basins: dict, context_length: int = 512, horizon: int
         all_obs = []
         all_pred = []
 
-        for start in range(0, len(q) - ctx_len - horizon + 1, max(horizon, 7)):
+        for start in range(0, len(q) - ctx_len - horizon + 1, STRIDE):
             context = q[start: start + ctx_len]
             target = q[start + ctx_len: start + ctx_len + horizon]
 
@@ -295,15 +315,24 @@ def run_patchtst_zero_shot(basins: dict, context_length: int = 512, horizon: int
 
 # ── Persistence baseline ─────────────────────────────────────────────────────
 
-def run_persistence(basins: dict, horizon: int = 1):
-    """Naive persistence baseline: predict last observed value."""
+def run_persistence(basins: dict, context_length: int = 512, horizon: int = 1):
+    """Lag-1 persistence baseline, evaluated on the SAME stride-windowed target points
+    as the foundation models so the comparison is exactly like-for-like: for each
+    forecast origin (start of a context window), predict the target day q[start+CTX]
+    with the last observed value q[start+CTX-1]."""
     results = {}
     for bid, q_series in basins.items():
         q = q_series.values.astype(np.float32)
-        if len(q) < horizon + 1:
+        if len(q) < context_length + horizon:
             continue
-        obs = q[horizon:]
-        sim = q[:-horizon]
+        obs, sim = [], []
+        for start in range(0, len(q) - context_length - horizon + 1, STRIDE):
+            t = start + context_length
+            obs.append(q[t])
+            sim.append(q[t - 1])  # last observed value before the target
+        if not obs:
+            continue
+        obs = np.asarray(obs); sim = np.asarray(sim)
         results[bid] = compute_all_metrics(obs, sim)
         results[bid]["n_predictions"] = len(obs)
     return results
@@ -346,11 +375,25 @@ def main():
                         default=["CAMELS-US", "CAMELS-BR", "CAMELS-CL", "CAMELS-AUS", "LamaH-CE"])
     parser.add_argument("--context_length", type=int, default=512)
     parser.add_argument("--horizon", type=int, default=1)
-    parser.add_argument("--test_start", default="2015-01-01")
-    parser.add_argument("--test_end", default="2019-12-31")
+    parser.add_argument("--test_start", default=None)
+    parser.add_argument("--test_end", default=None)
+    parser.add_argument("--last_years", type=int, default=None,
+                        help="Evaluate on the most recent N years of each basin's record")
+    parser.add_argument("--stride", type=int, default=7,
+                        help="Uniform evaluation stride (days) applied to ALL models")
+    parser.add_argument("--out_suffix", default="",
+                        help="Suffix appended to output CSV names (avoids overwriting prior runs)")
+    parser.add_argument("--num_samples", type=int, default=1,
+                        help="Chronos sample trajectories per forecast (point forecast = their mean). "
+                             "NOTE: the l5s7 benchmark was run with the default 1 = a single stochastic draw.")
+    parser.add_argument("--batch_size", type=int, default=32,
+                        help="Chronos batch size (contexts per predict call; x num_samples sequences)")
     parser.add_argument("--shard_id", type=int, default=0)
     parser.add_argument("--n_shards", type=int, default=1)
     args = parser.parse_args()
+
+    global STRIDE
+    STRIDE = args.stride
 
     print(f"\n{'=' * 60}")
     print(f"Foundation Model Evaluation")
@@ -366,14 +409,15 @@ def main():
 
     for ds_name in args.datasets:
         print(f"\n--- Dataset: {ds_name} ---")
-        basins = load_basin_series(ds_name, args.test_start, args.test_end)
-        print(f"  Loaded {len(basins)} basins")
+        basins = load_basin_series(ds_name, args.test_start, args.test_end, args.last_years)
+        print(f"  Loaded {len(basins)} basins"
+              + (f" (last {args.last_years} yr/basin)" if args.last_years else ""))
 
         if len(basins) == 0:
             continue
 
         # Shard basins across parallel processes
-        shard_suffix = f"_shard{args.shard_id}" if args.n_shards > 1 else ""
+        shard_suffix = (args.out_suffix or "") + (f"_shard{args.shard_id}" if args.n_shards > 1 else "")
         if args.n_shards > 1:
             basin_items = list(basins.items())
             basins = dict(basin_items[args.shard_id::args.n_shards])
@@ -392,11 +436,12 @@ def main():
             if model_name == "timesfm":
                 results = run_timesfm_zero_shot(basins, args.context_length, args.horizon)
             elif model_name == "chronos":
-                results = run_chronos_zero_shot(basins, args.context_length, args.horizon)
+                results = run_chronos_zero_shot(basins, args.context_length, args.horizon,
+                                                num_samples=args.num_samples, batch_size=args.batch_size)
             elif model_name == "patchtst":
                 results = run_patchtst_zero_shot(basins, args.context_length, args.horizon)
             elif model_name == "persistence":
-                results = run_persistence(basins, args.horizon)
+                results = run_persistence(basins, args.context_length, args.horizon)
             else:
                 continue
 

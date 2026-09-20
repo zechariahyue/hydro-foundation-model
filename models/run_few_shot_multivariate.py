@@ -16,6 +16,7 @@ Per-basin NSE; report medians. Short context (CTX) so higher fractions have trai
 
 Usage: python run_few_shot_multivariate.py --dataset CAMELS-US --fraction 0.10
 """
+import os
 import argparse, time, os, sys
 from pathlib import Path
 import numpy as np, pandas as pd

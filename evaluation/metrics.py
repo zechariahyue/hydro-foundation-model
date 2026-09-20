@@ -4,6 +4,7 @@ Evaluation metrics for streamflow forecasting.
 All metrics operate on numpy arrays of observed (y) and predicted (y_hat).
 """
 
+import os
 import numpy as np
 from scipy import stats
 

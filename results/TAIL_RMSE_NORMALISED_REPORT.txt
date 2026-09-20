@@ -1,0 +1,47 @@
+TAIL RMSE -- DIMENSIONLESS RESCALING
+==============================================================================
+
+sigma_obs recovered analytically as RMSE / sqrt(1 - NSE) from the _l5s7 CSVs.
+Rows used for the estimate: NSE <= 0.9 (numerical stability).
+
+VALIDATION 1 -- cross-model agreement on sigma_obs
+------------------------------------------------------------------------------
+Every model is scored on identical target points, so sigma_obs recovered from
+different models' rows must agree. Relative spread = (max-min)/median across models.
+
+  basins with >=2 trustworthy model rows : 5,060
+  median relative spread                 : 2.186e-16
+  90th percentile relative spread        : 4.654e-16
+  max relative spread                    : 3.729e-13
+  basins with spread > 1%                : 0 (0.00%)
+
+  -> spread ~0 confirms BOTH the identity AND that target points are matched.
+
+VALIDATION 2 -- sigma_obs vs independently-computed q_cv
+------------------------------------------------------------------------------
+  basins with q_cv from basin_attributes.csv : 5,166
+  mean_obs = sigma_obs / q_cv  (q_cv built independently from the raw archives)
+
+MEDIAN DIMENSIONLESS TAIL RMSE  (tail_RMSE_95 / sigma_obs)
+------------------------------------------------------------------------------
+dataset           timesfm      chronos     patchtst  persistence
+CAMELS-US           2.109        2.341        3.654        2.421
+CAMELS-BR           1.455        1.400        3.361        1.305
+CAMELS-CL           1.162        1.266        3.194        1.138
+CAMELS-AUS          2.615        2.609        4.042        2.817
+LamaH-CE            2.108        2.094        3.283        1.883
+CAMELS-IND          2.342        2.365        3.845        2.197
+
+Dimensionless: tail error expressed in standard deviations of observed flow on the
+same scored points. Directly comparable across archives, unlike the native-unit form.
+
+MEDIAN TAIL RMSE AS A FRACTION OF MEAN FLOW  (tail_RMSE_95 / mean_obs)
+------------------------------------------------------------------------------
+dataset           timesfm      chronos     patchtst  persistence
+CAMELS-US           1.855        1.698        4.690        1.828
+CAMELS-BR           1.420        1.329        3.242        1.282
+CAMELS-CL           1.353        1.410        3.465        1.294
+CAMELS-AUS          9.548        9.653       15.430       10.231
+LamaH-CE               --           --           --           --
+CAMELS-IND          6.167        6.508       10.631        6.551
+

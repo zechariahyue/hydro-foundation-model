@@ -23,13 +23,15 @@ from evaluation.metrics import compute_all_metrics, nse
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 DATA_DIR = Path(os.environ.get("CAMELS_DATA_DIR", "data/processed"))
 RESULTS_DIR = Path(os.environ.get("RESULTS_DIR", "results"))
-CKPT_DIR = Path(os.environ.get("CKPT_DIR", "checkpoints"))
+CKPT_DIR = Path(os.environ.get("CKPT_DIR", "models/checkpoints"))
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 CKPT_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def load_basin_data(dataset_name, date_start=None, date_end=None):
-    """Load all basins for a dataset."""
+def load_basin_data(dataset_name, date_start=None, date_end=None, last_years=None):
+    """Load all basins for a dataset. If last_years is set, truncate each basin to its most
+    recent N years (date-based when the index is genuine; position-based fallback for
+    degenerate indices, e.g. CAMELS-BR whose dates are corrupted)."""
     ds_dir = DATA_DIR / dataset_name
     basins = {}
     if not ds_dir.exists():
@@ -37,10 +39,26 @@ def load_basin_data(dataset_name, date_start=None, date_end=None):
     for pf in sorted(ds_dir.glob("*.parquet")):
         bid = pf.stem
         df = pd.read_parquet(pf)
+        if not isinstance(df.index, pd.DatetimeIndex):
+            try:
+                df.index = pd.to_datetime(df.index)
+            except Exception:
+                pass
         if date_start:
             df = df[df.index >= date_start]
         if date_end:
             df = df[df.index <= date_end]
+        if last_years:
+            n_keep = int(last_years * 365.25)
+            try:
+                ndates = df.index.normalize().nunique()
+            except Exception:
+                ndates = 0
+            if ndates >= 0.5 * len(df):
+                cutoff = df.index.max() - pd.DateOffset(years=last_years)
+                df = df[df.index > cutoff]
+            else:
+                df = df.iloc[-n_keep:]
         if "QObs(mm/d)" in df.columns:
             q = df["QObs(mm/d)"].dropna()
             if len(q) > 100:
@@ -316,8 +334,15 @@ def main():
     parser.add_argument("--model", choices=["chronos", "lstm_transfer", "all"], default="all")
     parser.add_argument("--fraction", type=float, default=0.10)
     parser.add_argument("--dataset", default="CAMELS-BR")
-    parser.add_argument("--test_start", default="2015-01-01")
-    parser.add_argument("--test_end", default="2019-12-31")
+    parser.add_argument("--test_start", default=None)
+    parser.add_argument("--test_end", default=None)
+    parser.add_argument("--last_years", type=int, default=None,
+                        help="Use the most recent N years of each basin's record")
+    parser.add_argument("--out_suffix", default="")
+    parser.add_argument("--lora_rank", type=int, default=8,
+                        help="LoRA rank r (alpha fixed at 16). Default 8 matches the primary few-shot runs.")
+    parser.add_argument("--max_basins", type=int, default=0,
+                        help="If >0, randomly subsample to this many basins (deterministic, seed 42)")
     args = parser.parse_args()
 
     print(f"\n{'=' * 60}")
@@ -326,19 +351,27 @@ def main():
     print(f"Dataset: {args.dataset} | Device: {DEVICE}")
     print(f"{'=' * 60}\n")
 
-    basins = load_basin_data(args.dataset, args.test_start, args.test_end)
-    print(f"Loaded {len(basins)} basins from {args.dataset}")
+    basins = load_basin_data(args.dataset, args.test_start, args.test_end, args.last_years)
+    print(f"Loaded {len(basins)} basins from {args.dataset}"
+          + (f" (last {args.last_years} yr/basin)" if args.last_years else ""))
 
     if len(basins) == 0:
         print("No basins found!")
         return
+
+    if args.max_basins and len(basins) > args.max_basins:
+        import numpy as _np
+        keys = sorted(basins.keys())
+        idx = _np.random.default_rng(42).choice(len(keys), args.max_basins, replace=False)
+        basins = {keys[i]: basins[keys[i]] for i in sorted(idx)}
+        print(f"Subsampled to {len(basins)} basins (seed 42)")
 
     splits = split_few_shot(basins, args.fraction)
 
     models_to_run = ["chronos", "lstm_transfer"] if args.model == "all" else [args.model]
 
     for model_name in models_to_run:
-        fname = f"{model_name}_few_shot_{args.fraction}_{args.dataset}.csv"
+        fname = f"{model_name}_few_shot_{args.fraction}_{args.dataset}{args.out_suffix}.csv"
         if (RESULTS_DIR / fname).exists():
             print(f"\n  Skipping {model_name} (fraction={args.fraction}) on {args.dataset} - results exist")
             continue
@@ -347,7 +380,7 @@ def main():
         t0 = time.time()
 
         if model_name == "chronos":
-            results = few_shot_chronos_lora(splits)
+            results = few_shot_chronos_lora(splits, lora_rank=args.lora_rank)
         elif model_name == "lstm_transfer":
             ckpt = CKPT_DIR / "lstm_best.pt"
             results = few_shot_lstm_transfer(splits, ckpt)
@@ -366,7 +399,7 @@ def main():
                 row.update(metrics)
                 rows.append(row)
             df = pd.DataFrame(rows)
-            fname = f"{model_name}_few_shot_{args.fraction}_{args.dataset}.csv"
+            fname = f"{model_name}_few_shot_{args.fraction}_{args.dataset}{args.out_suffix}.csv"
             df.to_csv(RESULTS_DIR / fname, index=False)
             print(f"  Saved to {fname}")
             for m in ["NSE", "KGE", "RMSE"]:

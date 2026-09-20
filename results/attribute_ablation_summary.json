@@ -1,0 +1,48 @@
+{
+  "n_basins": 663,
+  "n_windows": 117002,
+  "static_cols": [
+    "area",
+    "elevation",
+    "slope",
+    "aridity",
+    "snow_fraction",
+    "forest_fraction",
+    "soil_porosity",
+    "p_seasonality"
+  ],
+  "dyn_cols": [
+    "prcp",
+    "tmax",
+    "tmin",
+    "srad",
+    "vp"
+  ],
+  "A_univariate": {
+    "median_NSE": 0.710382018677693,
+    "mean_NSE": -19.167483330105053,
+    "n": 662
+  },
+  "B_static": {
+    "median_NSE": 0.7106572019961253,
+    "mean_NSE": -19.16475371451124,
+    "n": 662
+  },
+  "C_forcings_static": {
+    "median_NSE": -0.419416027908058,
+    "mean_NSE": -792691.201703655,
+    "n": 662
+  },
+  "B_minus_A": {
+    "median_delta": 9.453996641095586e-09,
+    "mean_delta": 0.0027296155938184665,
+    "n_pairs": 662,
+    "wilcoxon_p": 0.13859368943381029
+  },
+  "C_minus_A": {
+    "median_delta": -0.9283086578381505,
+    "mean_delta": -792672.034220325,
+    "n_pairs": 662,
+    "wilcoxon_p": 1.9060867828474297e-86
+  }
+}

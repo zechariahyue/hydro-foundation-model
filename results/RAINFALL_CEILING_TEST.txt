@@ -1,0 +1,42 @@
+==============================================================================
+DATASET: CAMELS-US
+==============================================================================
+  basins with aligned discharge+precip: 670
+  basins forecast: 670
+==============================================================================
+DATASET: CAMELS-AUS
+==============================================================================
+  basins with aligned discharge+precip: 561
+  basins forecast: 561
+
+==============================================================================
+RESULT 1 (H-a): is TimesFM's error concentrated on rain days?
+==============================================================================
+bin             n    ac1  |err| wet  |err| dry  wet/dry  rho(|r|,P)
+Q1 flashy     304  0.469      1.316      0.158     6.99       0.258
+Q2            304  0.668      0.814      0.122     5.28       0.284
+Q3            303  0.804      0.557      0.097     5.37       0.323
+Q4 damped     304  0.954      0.280      0.094     2.53       0.206
+
+==============================================================================
+RESULT 2 (H-b, H-c): ORACLE TEST -- how much residual can OBSERVED rain remove?
+           (fit on first half of each basin, scored on held-out second half)
+==============================================================================
+bin             n  TimesFM resid  persistence resid  SHUFFLED (null)
+Q1 flashy     304          4.3%              2.1%            0.0%
+Q2            304          9.6%              7.0%            0.3%
+Q3            303         18.0%              9.8%            0.4%
+Q4 damped     304          0.1%             -2.8%           -0.7%
+
+READ:
+  * oracle gain > 0  -> the residual IS rainfall-shaped: rainfall is missing information.
+  * gain rising as memory falls (Q4 -> Q1) -> the ceiling is rainfall-driven exactly
+    where the paper claims it is.
+  * the SHUFFLED column is the null. If it matches the real column, the gain is noise
+    and the rainfall-ceiling claim is NOT supported.
+
+Spearman(rho_1, oracle gain on TimesFM residual) = -0.028  (p=3.31e-01, n=1215)
+  Negative => rainfall explains MORE of the residual in LOW-memory basins.
+
+  CAMELS-AUS   n= 552  rho=+0.089  p=3.60e-02  median gain=3.4%
+  CAMELS-US    n= 663  rho=-0.141  p=2.84e-04  median gain=10.0%

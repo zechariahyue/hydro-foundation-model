@@ -3,6 +3,7 @@
 LSTM and ConvLSTM baseline models for streamflow forecasting.
 """
 
+import os
 import torch
 import torch.nn as nn
 
