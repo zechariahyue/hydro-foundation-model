@@ -106,7 +106,7 @@ export CKPT_DIR="models/checkpoints"
 
 Datasets (all public): CAMELS-US https://ral.ucar.edu/solutions/products/camels · CAMELS-BR
 https://zenodo.org/records/3709337 · CAMELS-CL https://doi.org/10.5194/hess-22-5817-2018 ·
-CAMELS-AUS https://doi.org/10.5194/essd-13-3847-2021 · CAMELS-IND https://doi.org/10.5194/essd-2024-560 ·
+CAMELS-AUS https://doi.org/10.5194/essd-13-3847-2021 · CAMELS-IND https://doi.org/10.5194/essd-17-461-2025 ·
 LamaH-CE https://zenodo.org/records/5153305.
 
 ## Reproducing the paper
